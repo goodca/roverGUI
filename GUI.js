@@ -10,7 +10,7 @@ server = http.createServer(function(req, res) {
     case '/':
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.write('<h1>Hello! Try the <a href="/GUI.html">GUI</a></h1>');
-	res.write('<h1>Or the <a href="/simple.html">Simple Control</a></h1>');
+res.write('<h1>Or the <a href="/simple.html">Simple Control</a></h1>');
       res.end();
       break;
     case '/GUI.html':
@@ -49,25 +49,14 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function(socket){
 
   console.log("Connection " + socket.id + " accepted.");
-
-	var filepath = path.join(__dirname, '/output/instruction.txt');
-	var file_contents = 'config stuff';
-	
-
-    fs.writeFile(filepath, file_contents, function(err) {
-         if(err) {
-              r.errors.push('Could not write config file');
-              callback(r);
-         } else {
-              callback(r)
-         }
-    });
    
   // now that we have our connected 'socket' object, we can
   // define its event handlers
   socket.on('message', function(message){
-        console.log("Received message: " + message + __dirname + " - from client " + socket.id);
-		console.log(__dirname + "=dir");
+        console.log("Received message: " + message + " - from client " + socket.id);
+	fs.writeFile('./inst.txt', message,'ASCII', function(err, data) {
+            if(err) throw err;  
+        });
   });
    
   socket.on('disconnect', function(){

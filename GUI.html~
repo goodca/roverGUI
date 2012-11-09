@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+	<script src="/json.js"></script> <!-- for ie -->
+   	<script src="/socket.io/socket.io.js"></script>
     <title>Google Maps JavaScript API v3 Example: Map Simple</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
@@ -16,17 +18,18 @@
       var map;
       function initialize() {
         var mapOptions = {
-          zoom: 8,
-          center: new google.maps.LatLng(-34.397, 150.644),
+          zoom: 12,
+          center: new google.maps.LatLng(39.487, -87.327),
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         map = new google.maps.Map(document.getElementById('map_canvas'),
             mapOptions);
       
-	google.maps.event.addListener(map, 'dblclick', function(e) {
+	google.maps.event.addListener(map, 'click', function(e) {
           // 3 seconds after the center of the map has changed, pan back to the
           // marker.
           placeMarker(e.latLng, map);
+		sendCoords(e.latLng + "");
         });
 	}
 	function placeMarker(position, map) {
@@ -39,9 +42,79 @@
 
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
+	
   </head>
   <body>
     <div id="map_canvas"></div>
+
+	<script>
+       
+    var socket;
+    var firstconnect = true;
+	connect();
+       
+    function connect() {
+      if(firstconnect) {
+        socket = io.connect(null);
+         
+        socket.on('message', function(data){ message(data); });
+		socket.on('instruction', function(inst){ message(data); });
+		socket.on('sendCoords', function(coords){ coords(data); });
+		socket.on('doneCoords', function(coords){ message(data); });
+        socket.on('connect', function(){ status_update("Connected to Server"); });
+        socket.on('disconnect', function(){ status_update("Disconnected from Server"); });
+        socket.on('reconnect', function(){ status_update("Reconnected to Server"); });
+        socket.on('reconnecting', function( nextRetry ){ status_update("Reconnecting in "
+          + nextRetry + " seconds"); });
+        socket.on('reconnect_failed', function(){ message("Reconnect Failed"); });
+         
+        firstconnect = false;
+      }
+      else {
+        socket.socket.reconnect();
+      }
+    }
+       
+    function disconnect() {
+      socket.disconnect();
+    }
+       
+    function message(data) {
+      document.getElementById('message').innerHTML = "Server says: " + data;
+    }
+	
+	function sendCoords(coords) { 
+		socket.send(coords);
+	}
+       
+    function status_update(txt){
+      document.getElementById('status').innerHTML = txt;
+    }
+     
+    function esc(msg){
+      return msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+	
+	function doneCoords(){
+		socket.send("done");
+	}
+   
+    function send() {
+      socket.send("Hello Server!");    
+    };     
+	
+	function instruction(inst) {
+		socket.send(inst);
+	};
+   
+     
+    </script>
+   
+    <h1>Click on a command</h1>	
+    <div><p id="status">Waiting for input</p></div>
+    <div><p id="message"></p></div>  
+    <button id="done" onClick='doneCoords()'/>done</button>
+   
   </body>
 </html>
 
