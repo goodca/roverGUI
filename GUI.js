@@ -49,7 +49,11 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function(socket){
 
   console.log("Connection " + socket.id + " accepted.");
-   
+  var coords = "";
+	//clear out anything that was in the output file
+	fs.writeFile('./inst.txt', "" ,'ASCII', function(err, data) {
+            if(err) throw err;  
+        });
   // now that we have our connected 'socket' object, we can
   // define its event handlers
   socket.on('message', function(message){
@@ -58,7 +62,19 @@ io.sockets.on('connection', function(socket){
             if(err) throw err;  
         });
   });
+
+	socket.on('coordinate', function(coord){
+        console.log("Received coordinate: " + coord + " - from client " + socket.id);
+		coords = coords + coord + "\n";
+  });
    
+	socket.on('doneCoords', function(){
+        console.log("Received message: " + coords + " - from client " + socket.id);
+	fs.writeFile('./inst.txt', coords ,'ASCII', function(err, data) {
+            if(err) throw err;  
+        });
+  });
+
   socket.on('disconnect', function(){
     console.log("Connection " + socket.id + " terminated.");
   });

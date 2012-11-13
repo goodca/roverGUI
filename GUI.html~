@@ -18,7 +18,7 @@
       var map;
       function initialize() {
         var mapOptions = {
-          zoom: 12,
+          zoom: 16,
           center: new google.maps.LatLng(39.487, -87.327),
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
@@ -59,7 +59,7 @@
          
         socket.on('message', function(data){ message(data); });
 		socket.on('instruction', function(inst){ message(data); });
-		socket.on('sendCoords', function(coords){ coords(data); });
+		socket.on('sendCoords', function(coords){ coordinate(coords); });
 		socket.on('doneCoords', function(coords){ message(data); });
         socket.on('connect', function(){ status_update("Connected to Server"); });
         socket.on('disconnect', function(){ status_update("Disconnected from Server"); });
@@ -84,7 +84,7 @@
     }
 	
 	function sendCoords(coords) { 
-		socket.send(coords);
+		socket.emit(coords);
 	}
        
     function status_update(txt){
@@ -102,10 +102,6 @@
     function send() {
       socket.send("Hello Server!");    
     };     
-	
-	function instruction(inst) {
-		socket.send(inst);
-	};
    
      
     </script>
