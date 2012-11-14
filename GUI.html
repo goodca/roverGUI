@@ -16,6 +16,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <script>
       var map;
+		var poly;
       function initialize() {
         var mapOptions = {
           zoom: 16,
@@ -24,20 +25,35 @@
         };
         map = new google.maps.Map(document.getElementById('map_canvas'),
             mapOptions);
-      
-	google.maps.event.addListener(map, 'click', function(e) {
-          // 3 seconds after the center of the map has changed, pan back to the
-          // marker.
-          placeMarker(e.latLng, map);
-		sendCoords(e.latLng + "");
-        });
-	}
-	function placeMarker(position, map) {
+
+		var polyOptions = {
+          strokeColor: '#000000',
+          strokeOpacity: 1.0,
+          strokeWeight: 3
+        }
+        poly = new google.maps.Polyline(polyOptions);
+        poly.setMap(map);
+      google.maps.event.addListener(map, 'click', addLatLng);
+      }
+
+      /**
+       * Handles click events on a map, and adds a new point to the Polyline.
+       * @param {MouseEvent} mouseEvent
+       */
+      function addLatLng(event) {
+
+        var path = poly.getPath();
+
+        // Because path is an MVCArray, we can simply append a new coordinate
+        // and it will automatically appear
+        path.push(event.latLng);
+
+        // Add a new marker at the new plotted point on the polyline.
         var marker = new google.maps.Marker({
-          position: position,
+          position: event.latLng,
           map: map
         });
-        //map.panTo(position);
+		sendCoords(event.latLng + "");
       }
 
       google.maps.event.addDomListener(window, 'load', initialize);
@@ -45,7 +61,7 @@
 	
   </head>
   <body>
-    <div id="map_canvas"></div>
+    
 
 	<script>
        
@@ -105,12 +121,11 @@
    
      
     </script>
-   
-    <h1>Click on a command</h1>	
     <div><p id="status">Waiting for input</p></div>
     <div><p id="message"></p></div>  
     <button id="done" onClick='doneCoords()'/>done</button>
-   
+	<div id="map_canvas"></div>
   </body>
+	
 </html>
 

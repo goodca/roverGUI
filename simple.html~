@@ -66,9 +66,8 @@
     <div><p id="message"></p></div>  
 	<button id="forward" onClick='instruction("forward")'/>forward</button>
 	<button id="reverse" onClick='instruction("reverse")'/>reverse</button>
+	<button id="stop" onClick='instruction("stop")'/>reverse</button>
 	<button id="left" onClick='instruction("left")'/>left</button>
 	<button id="right" onClick='instruction("right")'/>right</button>
-	<button id="forward right" onClick='instruction("forward right")'/>forward right</button>
-	<button id="forward left" onClick='instruction("forward left")'/>forward left</button>
   </body>
 </html>

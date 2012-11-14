@@ -9,8 +9,9 @@ server = http.createServer(function(req, res) {
   switch (path){
     case '/':
       res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write('<h1>Hello! Try the <a href="/GUI.html">GUI</a></h1>');
-res.write('<h1>Or the <a href="/simple.html">Simple Control</a></h1>');
+			res.write('<h1> <a href="/simple.html">Simple Control</a></h1>');
+      res.write('<h1> <a href="/GUI.html">Maps GUI</a></h1>');
+	
       res.end();
       break;
     case '/GUI.html':
@@ -73,6 +74,7 @@ io.sockets.on('connection', function(socket){
 	fs.writeFile('./inst.txt', coords ,'ASCII', function(err, data) {
             if(err) throw err;  
         });
+	coords = "";
   });
 
   socket.on('disconnect', function(){
